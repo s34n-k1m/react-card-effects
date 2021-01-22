@@ -1,0 +1,13 @@
+.DrawCardApp {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.DrawCardApp-button {
+  margin-top: 5vh;
+  padding: 10px;
+  background-color: red;
+  border-radius: 10px;
+}
