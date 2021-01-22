@@ -13,6 +13,7 @@ const BASE_API_URL = 'https://deckofcardsapi.com/api/deck';
  * - deckId
  * - remaining: number of cards not yet drawn from deck
  * - drawn: [{card}, ... ]
+ * - shouldDraw: true/false
  * 
  * App -> DrawCardApp -> Deck
  */
@@ -25,7 +26,7 @@ function DrawCardApp({numDecks=1}) {
   const [shouldDraw, setShouldDraw] = useState(false);
   
   useEffect(function drawCardFromAPI() {
-    console.log("Drawing Card effect ran");
+    console.log("Drawing Card from API ran");
     async function drawCard() {
       let cardResult = await axios.get(`${BASE_API_URL}/${deckId}/draw/?count=1`);
       console.log("got cardResult");
@@ -34,10 +35,10 @@ function DrawCardApp({numDecks=1}) {
     }
     if (!shouldDraw) return;
     drawCard();
-  }, [remaining]);
+  }, [shouldDraw, remaining, deckId]);
 
   useEffect(function getDeckFromAPI() {
-    console.log("getDeck ran");
+    console.log("getDeck from API ran");
     async function getDeck() {
       let deckResult = await axios.get(`${BASE_API_URL}/new/shuffle/?deck_count=${numDecks}`);
       console.log("Got deck Result");
@@ -45,7 +46,7 @@ function DrawCardApp({numDecks=1}) {
       setRemaining(deckResult.data.remaining);
     }
     getDeck();
-  }, []);
+  }, [numDecks]);
 
 
     function handleClick(evt) {
@@ -64,6 +65,7 @@ function DrawCardApp({numDecks=1}) {
     }
 
     function renderButton() {
+      // FLIP it so most common path comes first
       return remaining <= 0 
                 ? '' 
                 : <button 

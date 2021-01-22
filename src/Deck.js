@@ -12,6 +12,8 @@ import "./Deck.css";
  */
 
 function Deck({drawn}) {
+  console.log("Deck rendered");
+  // loop over all cards here
   return (
     <div className="Deck">
       <Card card={drawn[drawn.length - 1]} />
