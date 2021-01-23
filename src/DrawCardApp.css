@@ -5,8 +5,8 @@
   align-items: center;
 }
 
-.DrawCardApp-button {
-  margin-top: 5vh;
+.DrawCardApp-drawButton,.DrawCardApp-shuffleButton  {
+  margin-top: 3vh;
   padding: 10px;
   background-color: rgb(230, 64, 35);
   border-radius: 10px;

@@ -18,13 +18,14 @@ const BASE_API_URL = 'https://deckofcardsapi.com/api/deck';
  * App -> DrawCardApp -> Deck
  */
 
-function DrawCardApp({numDecks=1}) {
+function DrawCardApp({ numDecks = 1 }) {
   console.log("DrawCardApp rendered");
   const [deckId, setDeckId] = useState(null);
   const [remaining, setRemaining] = useState(null);
   const [drawn, setDrawn] = useState([]);
   const [shouldDraw, setShouldDraw] = useState(false);
-  
+  const [shouldShuffle, setShouldShuffle] = useState(false);
+
   useEffect(function drawCardFromAPI() {
     console.log("Drawing Card from API ran");
     async function drawCard() {
@@ -35,7 +36,7 @@ function DrawCardApp({numDecks=1}) {
     }
     if (!shouldDraw) return;
     drawCard();
-  }, [shouldDraw, remaining, deckId]);
+  }, [shouldDraw, deckId]);
 
   useEffect(function getDeckFromAPI() {
     console.log("getDeck from API ran");
@@ -48,35 +49,63 @@ function DrawCardApp({numDecks=1}) {
     getDeck();
   }, [numDecks]);
 
-
-    function handleClick(evt) {
-      setRemaining(remaining => remaining - 1);
-      setShouldDraw(true);
+  useEffect(function shuffleDeckFromAPI() {
+    console.log("shuffleDeck from API ran");
+    async function shuffleDeck() {
+      let shuffleResult = await axios.get(`${BASE_API_URL}/${deckId}/shuffle`);
+      console.log("Got shuffled deck result");
+      setDrawn([]);
+      setRemaining(shuffleResult.data.remaining);
+      setShouldShuffle(false);
     }
+    if (!shouldShuffle) return;
+    shuffleDeck();
+  }, [deckId, shouldShuffle]);
 
-    function renderDeckOrMessage() {
-      if (drawn.length === 0) {
-        return <h3 className="DrawCardApp-loading">Go ahead and get a card!</h3>;
-      } else if (remaining === 0) {
-        return <h3 className="DrawCardApp-noCards">Error: no cards remaining!</h3>;
-      } else {
-        return <Deck drawn={drawn}/>;
-      }
+
+  function handleDraw(evt) {
+    setRemaining(remaining => remaining - 1);
+    setShouldDraw(true);
+  }
+
+  function handleShuffle(evt) {
+    if (shouldShuffle) return;
+    setShouldShuffle(true);
+  }
+
+  function renderDeckOrMessage() {
+    if (drawn.length === 0) {
+      return <h3 className="DrawCardApp-loading">Go ahead and get a card!</h3>;
+    } else if (remaining === 0) {
+      return <h3 className="DrawCardApp-noCards">Error: no cards remaining!</h3>;
+    } else {
+      return <Deck drawn={drawn} />;
     }
+  }
 
-    function renderButton() {
-      // FLIP it so most common path comes first
-      return remaining <= 0 
-                ? '' 
-                : <button 
-                      className="DrawCardApp-button"
-                      onClick={handleClick}>GIMME A CARD!!!!!
+  function renderRenderDrawButton() {
+    return remaining > 0
+      ? <button
+        className="DrawCardApp-drawButton"
+        onClick={handleDraw}>GIMME A CARD!!!!!
                   </button>
-    }
+      : ''
+  }
 
-    return (
+  function renderShuffleButton() {
+
+    return remaining > 0
+      ? <button
+        className="DrawCardApp-shuffleButton"
+        onClick={handleShuffle}>SHUFFLE DECK
+                  </button>
+      : ''
+  }
+
+  return (
     <div className="DrawCardApp">
-      {renderButton()}
+      {renderRenderDrawButton()}
+      {renderShuffleButton()}
       <div className="DrawCardApp-deck">
         {renderDeckOrMessage()}
       </div>

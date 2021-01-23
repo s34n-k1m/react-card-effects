@@ -8,12 +8,17 @@
  * Deck -> Card
  */
 
-function Card({card}) {
+function Card({ card }) {
   const cardSrc = card.image;
   const altText = `The ${card.value} of ${card.suit}`;
 
+
+  let style = {
+    transform: `rotate(${Math.random() * 180}deg)`
+  }
+
   return (
-    <img src={cardSrc} alt={altText} />
+    <img style={style} src={cardSrc} alt={altText} />
   )
 }
 
